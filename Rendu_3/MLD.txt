@@ -1,0 +1,87 @@
+MLD
+
+Ticket (#idTicket : integer, horaire_entree : timestamp, horaire_sortie:timestamp, type_Vehicule: enumerate{camion, 2_roues, vehicule_simple},transaction=> Transaction, parking=> Parking)
+
+Transaction(#idTransaction: integer, comte=>Compte, moyen_paiement: enumerate{'carte','espèce'}, montant: float)
+
+Occasionnel(#login => Compte)
+
+Compte(#idCompte: integer, email : varchar, mot_de_passe: varchar, point_de_fidelite: integer, immat : varchar)
+
+Abonne(#compte => Compte, nom: varchar, prenom: varchar) 
+/*On fait un héritage vers le bas, on rajoute l'association avec Compte aux classes filles*/
+
+Abonnement(#nom: varchar, prix: float, type_vehicule: enumerate{camion, 2_roues, vehicule_simple})
+
+Souscription(#abonnement => Abonnement, #abonne => Compte, date_debut: date)
+//Une Souscription dure un mois
+
+
+Parking(#idParking: integer,nb_places: integer, nb_personnes: integer, zone => Zone)
+
+Place(#num: integer, #parking => idParking, type_place: enumerate{camion, 2_roues, vehicule_simple}, type_vehicule: enumerate{camion, 2_roues, vehicule_simple})
+
+Reservation(#idRes: integer, parking => Place, numPlace => Place, compte => Compte, horaire: time)
+
+Zone(#nom: varchar, prix: float)
+
+CONTRAINTE MLD:
+
+Place:
+numero est une clé locale
+
+	- Non Nullité
+
+POUR TICKET, ON A :
+horaire_entree, type_Vehicule, transaction, parking NOT NULL
+horaire_sortie NULABLE
+prix >= 0
+
+POUR TRANSACTION, ON A :
+moyen_paiement NOT NULL
+pt_de_vente pt_de_vente_t NOT NULL
+montant >= 0
+
+
+Pour Souscription :
+date_debut NOT NULL
+
+Pour Compte : 
+email UNIQUE NOT NULL
+mot_de_passe NOT NULL
+point_de_fidelite >= 0
+immat NOT NULL
+
+
+Pour Abonnement : 
+prix > 0
+type_Vehicule NOT NULL
+
+Pour Parking :
+zone NOT NULL
+nb_personnes >= 0, nb_places > 0, nb_personnes <= nb_places
+
+Pour Place :
+type_place NOT NULL
+
+Pour Zone : 
+prix > 0
+
+Pour réservation :
+horaire NOT NULL
+
+	- Temporelle 
+
+POUR TICKET, ON A:
+horaire_sortie NULL OR horaire_sortie > horaire_entree
+
+	- Cardinalités:
+
+Un parking a toujours au moins une place qui lui est associée :
+
+Restriction(JointureExterneGauche(Parking, Place, Parking.idParking = Place.num), num = NULL) = {}
+
+Un abonne a toujours au moins un abonnement qui lui est associé :
+
+Restriction (JointureExterneGauche(Souscription ,Abonne, Souscription.abonne = Abonne.idCompte), abonnement = NULL) = {}
+

@@ -1,0 +1,49 @@
+//On part ici du principe que le client ne reste pas dans le parking illégalement (sans ticket valide)
+
+
+Parking : nb_places (> 0), nb_personnes
+/* nb_places_dispo par type de véhicule, Valeur calculée : nb_places-nb_personnes_parking - nb_reservation*/
+ - composé de 1..* Place
+ - situé dans une Zone(Asso *-1)
+ 
+
+Place : num(clé locale), type_place{couverte, air libre}, type_vehicule: {camion, 2_roues, vehicule_simple}
+
+Zone : nom(clé), prix (>= 0)
+
+Utilisateur :
+- possède un Compte(Asso 1-0..1)
+
+Occasionnel :
+- hérite de Utilisateur (héritage vers la classe fille)
+
+
+Abonné : nom, prenom
+- hérite de Utilisateur (héritage vers la classe fille)
+- possède une Souscription
+- souscrit à un Abonnement(Asso *-1..*)
+
+Souscription : date_debut
+ - Classe d'association entre Abonné et Abonnement
+
+Compte : email(clé), mot_de_passe, points_fidelite (>= 0)
+- réserve un place de Parking(Asso 0..1-*)
+/* L'email peut etre modifié par l'utilisateur*/
+
+Reservation : horaire
+- Classe d'association entre Compte et Place
+
+Ticket : horaire_entree: time, horaire_sortie: time , type_point_de_vente: {guichet, automate},type_Vehicule: {camion, 2_roues, vehicule_simple}, prix:float
+-donne_acces à un Parking (Asso n-1)
+- payé_par une Transaction(Asso 1-1)
+
+Transaction : moyen_paiement {carte, espèces}
+
+
+Abonnement : nom(clé): varchar, prix: integer, type_Vehicule:{camion, 2_roues, vehicule_simple}
+
+
+
+Utilisateurs de la BD et leurs roles :
+- Un Utilisateur quelconque peut créer et accéder à son compte et aux réservations qui lui sont associées, s'il a un compte il peut prendre des réservations, avec son compte il peut également souscrire à un abonnement, il doit alors rentrer son nom et son prénom, choisir l'abonnement pour un type de véhicule en particulier, et payer
+- Un administrateur à accès aux transactions (achats de tickets), aux souscriptions et aux réservations de chaque utilisateur

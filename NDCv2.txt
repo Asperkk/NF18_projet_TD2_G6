@@ -1,0 +1,45 @@
+//On part ici du principe que le client ne reste pas dans le parking illégalement (sans ticket valide)
+
+
+Parking : nb_places (> 0), nb_personnes_parking
+/* nb_places_dispo par type de véhicule, Valeur calculée : nb_places-nb_personnes_parking - nb_reservation*/
+ - composé de 1..* Place
+ - situé dans une Zone(Asso *-1)
+ 
+
+Place : num(clé locale), type_place{couverte, air libre}, type_vehicule: {camion, 2_roues, vehicule_simple}
+
+Zone : nom(clé), prix (>= 0)
+
+Utilisateur :
+- possède un Compte(Asso 1-0..1)
+
+
+Occasionnel :
+- hérite de Utilisateur (La classe mère possède une association sortante, alors l'héritage par les classes filles fonctionne toujours très bien.)
+- achète un Ticket (Asso 1-*)
+
+
+Abonné : nom, prenom
+- hérite de Utilisateur (La classe mère possède une association sortante, alors l'héritage par les classes filles fonctionne toujours très bien.)
+- souscrit à un Abonnement(Asso *-1..*)
+
+Souscription : date_debut, moyen_paiement{carte, espèces}
+ - Classe d'association entre Abonné et Abonnement
+
+Compte : email(clé), mot_de_passe, points_fidelite (>= 0)
+- réserve pour un Parking(Asso 0..1-*)
+/* L'email peut etre modifié par l'utilisateur*/
+
+Reservation :
+- Classe d'association entre Compte et Parking
+
+
+Transaction : moyen_paiement {carte, espèces}
+
+Ticket : horaire_entree : time, horaire_sortie:time , type_point_de_vente{guichet, automate},type_Vehicule: nom{camion, 2_roues, vehicule_simple}, prix:float
+-donne_acces à un Parking (Asso n-1)
+
+Abonnement : nom(clé), prix, type_Vehicule:{camion, 2_roues, vehicule_simple}
+
+/*Le nom de l'abonnement peut changer*/

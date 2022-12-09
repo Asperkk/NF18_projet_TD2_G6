@@ -1,0 +1,68 @@
+MLD
+
+Ticket (#idTicket : integer, horaire_entree : time, horaire_sortie:time , type_point_de_vente: enumerate{guichet, automate},type_Vehicule: enumerate{camion, 2_roues, vehicule_simple},transaction=> Transaction, parking=> Parking, prix: float)
+
+Transaction(#idTransaction: integer, moyen_paiement: enumerate{'carte','espèce'})
+
+Occasionnel(#login => Compte)
+
+Abonne(#login => Compte, nom: varchar, prenom: varchar) 
+/*On fait un héritage vers le bas, on rajoute l'association avec Compte aux classes filles*/
+
+Abonnement(#nom: varchar, prix: float, type_vehicule: enumerate{camion, 2_roues, vehicule_simple})
+
+Souscription(#abonnement => Abonnement, #user => Compte, date_debut: date)
+
+Parking(#idParking: integer,nb_places: integer, nb_personnes: integer, zone => Zone)
+
+Place(#num: integer, #parking => idParking, type_place: enumerate{camion, 2_roues, vehicule_simple})
+
+Reservation(#idRes: integer, parking => Parking, numPlace => Place, user => Compte, horaire: time)
+
+Zone(#nom: varchar, prix: integer)
+
+CONTRAINTE MLD:
+
+Place:
+numero est une clé locale
+
+	- Non Nullité
+
+POUR TICKET, ON A :
+horaire_entree, type_Vehicule,type_point_de_vente, transaction, parking NOT NULL
+prix >= 0
+
+POUR TRANSACTION, ON A :
+moyen_paiement NOT NULL 
+
+POUR UTILISATEUR ON A :
+nom, prenom NULLABLE (seuls les abonnés ont un nom et prénom NOT NULL)
+
+Pour Souscription :
+date_debut NOT NULL
+
+Pour Abonnement : 
+prix > 0
+type_Vehicule NOT NULL
+
+Pour Parking :
+zone NOT NULL
+nb_personnes >= 0, nb_places > 0
+
+Pour Place :
+type_place NOT NULL
+
+Pour Zone : 
+prix > 0
+
+Pour réservation :
+horaire NOT NULL
+
+	- Temporelle 
+
+POUR TICKET, ON A:
+horaire_sortie NULL OR horaire_sortie > horaire_entree
+
+	- Cardinalités:
+
+Un parking a toujours au moins une place qui lui est associée
